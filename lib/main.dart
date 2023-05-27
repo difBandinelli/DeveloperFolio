@@ -1,45 +1,70 @@
-import 'package:DeveloperFolio/pages/homepage.dart';
-import 'package:DeveloperFolio/pages/layoutpage.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:adaptive_theme/adaptive_theme.dart';
-import 'package:flutter/widgets.dart';
-import 'configure/navigation_service.dart';
+
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'flutter_flow/flutter_flow_theme.dart';
+import 'flutter_flow/flutter_flow_util.dart';
+import 'flutter_flow/internationalization.dart';
+import 'flutter_flow/nav/nav.dart';
+import 'index.dart';
 
 void main() async {
-    WidgetsFlutterBinding.ensureInitialized();
-  final savedThemeMode = await AdaptiveTheme.getThemeMode();
-  setupLocator();
-  runApp(MyApp(savedThemeMode: savedThemeMode));
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await FlutterFlowTheme.initialize();
+
+  runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
-  final AdaptiveThemeMode savedThemeMode;
-  const MyApp({Key key, this.savedThemeMode}) : super(key: key);
+class MyApp extends StatefulWidget {
   // This widget is the root of your application.
   @override
+  State<MyApp> createState() => _MyAppState();
+
+  static _MyAppState of(BuildContext context) =>
+      context.findAncestorStateOfType<_MyAppState>()!;
+}
+
+class _MyAppState extends State<MyApp> {
+  Locale? _locale;
+  ThemeMode _themeMode = FlutterFlowTheme.themeMode;
+
+  late AppStateNotifier _appStateNotifier;
+  late GoRouter _router;
+
+  @override
+  void initState() {
+    super.initState();
+    _appStateNotifier = AppStateNotifier();
+    _router = createRouter(_appStateNotifier);
+  }
+
+  void setLocale(String language) {
+    setState(() => _locale = createLocale(language));
+  }
+
+  void setThemeMode(ThemeMode mode) => setState(() {
+        _themeMode = mode;
+        FlutterFlowTheme.saveThemeMode(mode);
+      });
+
+  @override
   Widget build(BuildContext context) {
-    return AdaptiveTheme(
-      light: ThemeData(
-        brightness: Brightness.light,
-        primarySwatch: Colors.red,
-        accentColor: Colors.amber,
-      ),
-      dark: ThemeData(
-        backgroundColor: Colors.black,
-        scaffoldBackgroundColor: Colors.black,
-        brightness: Brightness.dark,
-        primarySwatch: Colors.red,
-        accentColor: Colors.amber,
-      ),
-      initial: savedThemeMode ?? AdaptiveThemeMode.light,
-      builder: (theme, darkTheme) => MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'DeveloperFolio',
-        theme: theme,
-        darkTheme: darkTheme,
-        home: LayoutTemplate(),
-      ),
+    return MaterialApp.router(
+      title: 'ZeroCodeZ',
+      localizationsDelegates: [
+        FFLocalizationsDelegate(),
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      locale: _locale,
+      supportedLocales: const [Locale('en', '')],
+      theme: ThemeData(brightness: Brightness.light),
+      darkTheme: ThemeData(brightness: Brightness.dark),
+      themeMode: _themeMode,
+      routeInformationParser: _router.routeInformationParser,
+      routerDelegate: _router.routerDelegate,
     );
   }
 }

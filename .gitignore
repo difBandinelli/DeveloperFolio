@@ -19,13 +19,6 @@
 # VS Code which you may wish to be included in version control, so this line
 # is commented out by default.
 #.vscode/
-/firebase.json
-/.firebase
-.dist
-.dart_tool
-.idea
-/.firebaserc
-
 
 # Flutter/Dart/Pub related
 **/doc/api/
@@ -38,6 +31,10 @@
 .pub/
 /build/
 
+# Firebase – this is necessary if you use Firebase since it could otherwise 
+# lead to leaking of private certificates to your repository, which is no bueno.
+.firebase/
+
 # Web related
 lib/generated_plugin_registrant.dart
 
@@ -47,5 +44,7 @@ app.*.symbols
 # Obfuscation related
 app.*.map.json
 
-# Exceptions to above rules.
-!/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
+# Android Studio will place build artifacts here
+/android/app/debug
+/android/app/profile
+/android/app/release
